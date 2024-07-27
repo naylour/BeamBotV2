@@ -1,0 +1,32 @@
+{
+    "name": "@neatteam/webapp-core",
+    "private": true,
+    "scripts": {
+        "build": "bun config:gen && bun --bun turbo build",
+        "dev": "bun --bun turbo watch dev",
+        "config:gen": "bun --bun turbo config:gen",
+        "lint": "turbo lint",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    },
+    "devDependencies": {
+        "@tg-app/types": "^1.0.2",
+        "@types/jsonwebtoken": "^9.0.6",
+        "@types/ms": "^0.7.34",
+        "prettier": "^3.2.5",
+        "sass": "^1.77.8",
+        "turbo": "^2.0.9",
+        "typescript": "^5.4.5"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "packageManager": "bun@1.1.20",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "dependencies": {
+        "jsonwebtoken": "^9.0.2",
+        "ms": "^2.1.3"
+    }
+}

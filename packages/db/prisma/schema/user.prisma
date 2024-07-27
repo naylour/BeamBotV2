@@ -1,0 +1,91 @@
+model User {
+    id BigInt @id
+
+    lastName    String? @map("last_name")
+    firstName   String? @map("first_name")
+    username    String? @unique
+    isPremium   Boolean
+    isHeInvited Boolean @default(false) @map("is_he_invited")
+
+    role Roles @default(REGULAR)
+
+    account       Account?
+    wallet        Wallet?
+    refferAccount RefferAccount?
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("users")
+}
+
+enum Roles {
+    REGULAR
+    ADMIN
+    MANAGER
+    INFLUENCER
+}
+
+model Account {
+    id BigInt @id
+
+    User User @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    age        Float           @default(0)
+    inviteCode String          @unique @default(cuid())
+    reffers    RefferAccount[]
+    level      Int             @default(0)
+    reward     Reward?
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("accounts")
+}
+
+model Wallet {
+    id BigInt @id
+
+    User User @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    coins   Int @default(0)
+    tickets Int @default(0)
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("wallets")
+}
+
+model RefferAccount {
+    id BigInt @id
+
+    User User @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    earnedCoins   Int @default(0) @map("earned_coins")
+    earnedTickets Int @default(0) @map("earned_tickets")
+
+    oneWhoInvited BigInt
+    OneWhoInvited Account @relation(fields: [oneWhoInvited], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("reffers_accounts")
+}
+
+model Reward {
+    id BigInt @id
+
+    Account Account @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    lastReward  DateTime?
+    coinsCount  Int?
+    ticketCount Int?
+    day         Int       @default(0)
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("rewards")
+}

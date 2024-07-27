@@ -1,0 +1,16 @@
+{
+    "name": "@repo/proxy",
+    "module": "src/index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@repo/utils": "*",
+        "@repo/config": "*"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "scripts": {
+        "dev": "bun run ./src/index.ts"
+    }
+}

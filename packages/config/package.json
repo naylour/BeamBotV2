@@ -1,0 +1,26 @@
+{
+    "name": "@repo/config",
+    "module": "src/index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "@types/bun": "latest",
+        "@types/dotenv": "^8.2.0",
+        "@types/node": "^20.14.11"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "dotenv-expand": "^11.0.6"
+    },
+    "scripts": {
+        "config:gen": "bun run ./src/gen.ts",
+        "config:clear": "bun run ./src/clear.ts"
+    },
+    "exports": {
+        ".": "./env/config.js",
+        "./db": "./env/db.js"
+    }
+}

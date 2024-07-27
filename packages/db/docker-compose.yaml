@@ -1,0 +1,40 @@
+services:
+    postgres:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        container_name: database
+        environment:
+            - POSTGRES_USER=${DATABASE_USER}
+            - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+            - POSTGRES_PORT=${DATABASE_PORT}
+            - POSTGRES_HOST=${DATABASE_HOST}
+            - POSTGRES_DB=${DATABASE_DB}
+        ports:
+            - "${DATABASE_PORT}:5432"
+
+    redis-stack:
+        image: redis/redis-stack-server:latest
+        container_name: cache
+        ports:
+            - "${REDIS_PORT}:6379"
+        volumes:
+            - ./data/redis:/data
+            - ./redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 512M
+                reservations:
+                    cpus: '0.25'
+                    memory: 256M
+
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+        restart: unless-stopped
+
+volumes:
+    redis_data:
+        driver: local

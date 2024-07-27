@@ -1,0 +1,18 @@
+{
+    "name": "@repo/utils",
+    "module": "src/index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "exports": {
+        "./object": "./src/object.ts",
+        "./time": "./src/time.ts",
+        "./string": "./src/string.ts",
+        "./telegram": "./src/telegram.ts",
+        "./number": "./src/number.ts"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "name": "@repo/auth",
+    "module": "src/index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@repo/config": "*",
+        "@repo/db": "*",
+        "@repo/utils": "*",
+        "@sveltejs/kit": "^2.5.18",
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./types": "./src/types.d.ts"
+    }
+}

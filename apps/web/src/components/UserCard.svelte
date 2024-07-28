@@ -11,7 +11,7 @@
 
         <div class="user-data">
             <p class="user_username">{ user.value?.username || 'Anonimus' }</p>
-            <p class="user_level">Day: { user.value?.account.reward.day || 0 }</p>
+            <p class="user_level">Day: { user.value?.wallet.reward.day || 0 }</p>
         </div></Link>
 </div>
 
@@ -57,7 +57,7 @@
 
         &_username {
             overflow: hidden;
-            width: 9ch;
+            width: 8ch;
             overflow: hidden;
             text-overflow: ellipsis;
         }

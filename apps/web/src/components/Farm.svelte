@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
+	import Button from './Button.svelte';
 
 	let claimInterval = $state<ReturnType<typeof setInterval>>();
 	let farmDate = $state<Date>();
@@ -55,7 +56,7 @@
 <div class="farm">
 	<img src="./tasks_icon.svg" alt="" />
 	{#if status === 'start'}
-		<button type="button" class="farm_start" onclick={start}>Start farm</button>
+    <Button onclick={start}>Start farm</Button>
 	{:else if status === 'process'}
 		<div class="farm-header">
 			Farming: <b>{current.toFixed(2)}</b>
@@ -69,7 +70,7 @@
 		</div>
 	{:else if status === 'claim'}
 		<div class="farm-claim">Claim: {current.toFixed(2)}</div>
-		<button type="button" class="farm-claim_button" onclick={claim}>Claim</button>
+        <Button onclick={claim}>Claim</Button>
 	{/if}
 </div>
 

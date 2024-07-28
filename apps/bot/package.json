@@ -12,6 +12,7 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "@grammyjs/conversations": "^1.2.0",
         "grammy": "^1.27.0"
     },
     "scripts": {

@@ -1,3 +1,54 @@
+<script lang="ts">
+	import Button from './Button.svelte';
+
+    let tasks = $state< Record<
+		string,
+		{
+			title: string;
+			amount: number;
+			icon: string;
+			type: 'coin' | 'ticket';
+		}[]
+	>>({
+		daily: [
+			{
+				title: 'Join TG Group',
+				amount: 35000,
+				icon: '/tg.svg',
+				type: 'coin'
+			},
+			{
+				title: 'Follow our telegram channel',
+				amount: 10,
+				icon: '/tg.svg',
+				type: 'ticket'
+			}
+		],
+		general: [
+			{
+				title: 'Subscribe X channel',
+				amount: 10000,
+				icon: '/x.svg',
+				type: 'coin'
+			},
+			{
+				title: 'The loooooooooooooooooong task title',
+				amount: 1400000000,
+				icon: '/inst.svg',
+				type: 'ticket'
+			}
+		],
+		partners: [
+            {
+				title: 'Subscribe for BemBot team',
+				amount: 1000000,
+				icon: '/tg.svg',
+				type: 'coin',
+			},
+        ],
+	})
+</script>
+
 <section class="tasks">
 	<header class="tasks-header">
 		<h1 class="tasks_title">Tasks</h1>
@@ -6,79 +57,21 @@
 	</header>
 
 	<div class="tasks-blocks">
-		<div class="tasks-block tasks-daily">
-			<h3 class="tasks-block_title">Daily Tasks</h3>
-			<button type="button" data-done>
-                <img src="/tg.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-			<button type="button">
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-		</div>
-		<div class="tasks-block tasks-general">
-			<h3 class="tasks-block_title">General Tasks</h3>
-			<button type="button">
-                <img src="/tg.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-			<button type="button">
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-			<button type="button">
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-			<button type="button" data-done>
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-		</div>
-		<div class="tasks-block tasks-partners">
-			<h3 class="tasks-block_title">Partners</h3>
-			<button type="button" data-done>
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-			<button type="button">
-                <img src="/x.svg" alt="">
-                <div>
-                    <span>Follow our telegram channel</span>
-                    <span>+35k coins</span>
-                </div>
-                <img src="/arrow.svg" alt="">
-            </button>
-		</div>
+		{#each Object.keys(tasks) as taskName, i(i)}
+			{#if tasks?.[taskName]?.length > 0}
+				<div class="tasks-block tasks-{taskName}">
+					<h3 class="tasks-block_title">{taskName} Tasks</h3>
+					{#each tasks[taskName] as item, i (i)}
+						<Button
+							title={item.title}
+							amount={item.amount}
+							type={item.type}
+							icon={item.icon}
+						></Button>
+					{/each}
+				</div>
+			{/if}
+		{/each}
 	</div>
 </section>
 
@@ -87,7 +80,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-        overflow-y: scroll;
+		overflow-y: scroll;
 
 		&-header {
 			display: flex;
@@ -105,7 +98,7 @@
 			font-weight: 400;
 			font-size: 30px;
 		}
-
+        
 		&_subtitle {
 			margin-top: 10px;
 			font-weight: 400;
@@ -115,51 +108,51 @@
 
 		&-blocks {
 			margin-top: 30px;
-            padding-right: 10px;
-            padding-top: 5px;
+			padding-right: 10px;
 
 			display: flex;
 			flex-direction: column;
 			align-items: start;
-			gap: 40px;
+			gap: 20px;
 		}
 
 		&-block {
 			display: flex;
 			flex-direction: column;
-			gap: 5px;
+			gap: 20px;
 			width: 100%;
-            padding: 0 5px;
+
 			&_title {
-                margin-left: 16px;
-				font-size: 15px;
+                text-transform: capitalize;
+				margin-left: 16px;
+				font-size: 18px;
 				font-weight: 400;
 				text-shadow: 1px 1px 1px black;
 			}
 			button {
-                padding: 15px 25px;
+				padding: 15px 25px;
 				width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 5px;
-                overflow: visible;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 5px;
+				overflow: visible;
 
-                font-size: 14px;
+				font-size: 14px;
 
-                &[data-done]::before {
-                    background-color: #CECECE;
-                }
+				&[data-done]::before {
+					background-color: #cecece;
+				}
 
-                div {
-                    &:nth-child(2) {
-                        display: flex;
-                        flex-direction: column;
-                        text-align-last: left;
-                        justify-content: space-between;
-                        gap: 5px;
-                    }
-                }
+				div {
+					&:nth-child(2) {
+						display: flex;
+						flex-direction: column;
+						text-align-last: left;
+						justify-content: space-between;
+						gap: 5px;
+					}
+				}
 			}
 		}
 	}

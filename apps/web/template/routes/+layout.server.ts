@@ -1,6 +1,8 @@
+import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-export const load: LayoutServerLoad = async ({ locals }) => {
-    // if(locals.user?.account.reward.lastReward)
+export const load: LayoutServerLoad = async ({ locals, url }) => {
+    if(!locals.user?.account.heSeeWelcomeScreen && url.pathname !== '/welcome') redirect(301, '/welcome');
+
     return { ...locals };
 };

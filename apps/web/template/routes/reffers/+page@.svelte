@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
     import { tg, user } from 'stores';
+	import { Button } from 'components';
 
 	const { data } = $props();
 
@@ -59,8 +60,8 @@
 	</section>
 
 	<footer class="reffers-footer">
-		<button type="button" onclick={invite}>Invite friends <img src="./send.svg" alt="" /></button>
-		<button type="button" onclick={copy}><img src="./copy.svg" alt="" /></button>
+        <Button onclick={invite}>Invite friends <img src="./send.svg" alt="" /></Button>
+		<Button onclick={copy}><img src="./copy.svg" alt="" /></Button>
 	</footer>
 </main>
 

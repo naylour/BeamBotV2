@@ -2,10 +2,10 @@ import { Api, Context as BotContext } from 'grammy';
 import type { Update, UserFromGetMe } from 'grammy/types';
 import type { Bot } from './types.d.ts';
 
+
 export default class Context extends BotContext implements Bot.Context {
     user: Bot.Context['user'];
 
-    
     constructor(update: Update, api: Api, me: UserFromGetMe) {
         super(update, api, me);
     }

@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
 
 * {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 
     &::-webkit-scrollbar {
@@ -9,11 +10,18 @@
         width: 0;
         background: transparent;
     }
-    -ms-overflow-style: none;  /* IE 10+ */
-    scrollbar-width: none; 
+
+    -ms-overflow-style: none;
+    /* IE 10+ */
+    outline: none;
+    scrollbar-width: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color:transparent;
 }
 
-ul, ol > li {
+ul,
+ol>li {
     list-style: none;
 }
 
@@ -33,8 +41,10 @@ body {
 
 .bg {
     position: absolute;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
     z-index: -1;
     background: #fff linear-gradient(rgba(#4100FC, .4), rgba(#2B66FF, .8) 30%);
@@ -42,15 +52,19 @@ body {
     &::after {
         content: '';
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 120%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 120%;
         background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='29' height='50.115' patternTransform='scale(1.5) rotate(0)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0, 0%, 100%, 0)'/><path d='M14.498 16.858L0 8.488.002-8.257l14.5-8.374L29-8.26l-.002 16.745zm0 50.06L0 58.548l.002-16.745 14.5-8.373L29 41.8l-.002 16.744zM28.996 41.8l-14.498-8.37.002-16.744L29 8.312l14.498 8.37-.002 16.745zm-29 0l-14.498-8.37.002-16.744L0 8.312l14.498 8.37-.002 16.745z'  stroke-width='1' stroke='hsla(0, 0%, 100%, .08)' fill='none'/></pattern></defs><rect width='800%' height='800%' transform='translate(-30,-0.46)' fill='url(%23a)'/></svg>");
         z-index: -1;
     }
+
     &::before {
         content: '';
         position: absolute;
-        top: 0; left: 50%;
+        top: 0;
+        left: 50%;
         translate: -50% 0;
         height: 100%;
         aspect-ratio: 1 / 1;
@@ -64,55 +78,66 @@ body {
     max-width: 400px;
     padding: 10px 20px;
     height: 100%;
-    // overflow: hidden;
+    // overflow-x: hidden;
+    // overflow-y: scroll;
 }
 
-button[type="button"] {
+.button {
     position: relative;
-    padding: .5em 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     background-color: transparent;
-    gap: 10px;
-    
     border: none;
-
     font-family: inherit;
-    font-size: 20px;
     color: white;
-    text-shadow: 0 0 3px black;
+    font-size: 20px;
+    margin: 0 auto;
 
-    
-    filter: drop-shadow(-5px -5px 0px rgba(#F2EC00, 1));
-    // box-shadow: -10px -10px 10px #F2EC00;
-    
-    -webkit-tap-highlight-color: transparent;
+    width: fit-content;
+    filter: drop-shadow(1px 1px 0px rgba(black, 1)) drop-shadow(-1px -1px 0px rgba(black, 1));
 
-    &:active:after {
-        background-color: darken(#4C51F7, 5%);
+    &:active {
+        .button {
+            &-bg {
+                &--blue {
+                    background-color: darken(#4C51F7, 5%);
+                }
+            }
+        }
     }
-    
-    &::after {
-        content: '';
-        
+
+    &-bg {
         position: absolute;
-        top: 50%; left: 50%;
-        translate: -50% -50%;
-        width: 94%; height: 90%;
-        background-color: #4C51F7;
-        clip-path: polygon(4% 1%, 100% 1%, 95% 99%, 0% 99%);
-        z-index: -1;
+        display: block;
+        clip-path: polygon(calc(0% + 10px) 0%, 100% 0, calc(100% - 10px) 100%, 0% 100%);
+
+        &--yellow {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #F2EC00;
+            z-index: 1;
+        }
+
+        &--blue {
+            top: calc(50% + 4px);
+            left: calc(50% + 4px);
+            translate: -50% -50%;
+            width: 100%;
+            height: 100%;
+            background-color: #4C51F7;
+            z-index: 2;
+        }
     }
 
-    // &::before {
-    //     content: '';
-    //     position: absolute;
-    //     top: 0; left: 0;
-    //     width: 100%; height: 100%;
-    //     clip-path: polygon(5% 2%, 100% 0%, 95% 99.9%, 1% 100%);
-    //     background-color: #000;
-    //     z-index: -1;
-    // }
+    &-content {
+        position: relative;
+        padding: .2em 1.2em;
+        left: 4px;
+        top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        z-index: 3;
+    }
 }

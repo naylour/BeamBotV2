@@ -3,20 +3,17 @@
 	import { formatNumber } from '@repo/utils/number';
 	import { fade } from 'svelte/transition';
 	import { tg, user } from 'stores';
+	import Button from './Button.svelte';
+	import { goto } from '$app/navigation';
 
-	const rouletteData = {
-		winId: 2,
-		items: [
-			{ id: 0, img: 'coin', total: 10000, chance: 0.001 },
-			{ id: 1, img: 'coin', total: 100000, chance: 0.001 },
-			{ id: 2, img: 'ticket', total: 2, chance: 0.001 },
-			{ id: 3, img: 'coin', total: 200, chance: 0.001 },
-			{ id: 4, img: 'coin', total: 1000, chance: 0.001 },
-			{ id: 5, img: 'coin', total: 2000, chance: 0.001 },
-			{ id: 6, img: 'coin', total: 1500, chance: 0.001 },
-			{ id: 7, img: 'coin', total: 500, chance: 0.001 }
-		]
-	};
+	const {
+		rouletteData
+	}: {
+		rouletteData: {
+			items: App.SpinType[];
+			winId: number;
+		};
+	} = $props();
 
 	let wheel = $state<HTMLDivElement>();
 	let wheelList = $state<HTMLUListElement>();
@@ -41,13 +38,14 @@
 		lastTimestamp = timeStamp;
 
 		if (wheelList) {
-			if (wheelElemWidth - left + 12 < 0) {
+			if (wheelElemWidth - left < 0) {
 				const items = Array.from(wheelList.children) as HTMLLIElement[];
 
 				const firstChild = wheelList.removeChild(items[0]);
 				wheelList.insertAdjacentElement('beforeend', firstChild);
 
-				left = 0;
+				// left = (wheel?.getBoundingClientRect().width || 1) / (wheelElemWidth * 3 + );
+				left = -15;
 			}
 
 			step++;
@@ -60,21 +58,24 @@
 				const elem = document.querySelector(
 					`[data-id="${rouletteData.winId}"]`
 				) as HTMLLIElement;
+
 				const elemLeft = elem.getBoundingClientRect().left;
 
 				if (
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > 150 &&
-					speed > 200
+					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth * 4 &&
+					speed > 450
 				)
-					speed = Math.max(speed - 150 * deltaTime, 200);
-				if (
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > 100 &&
-					speed > 120
-				)
-					speed = Math.max(speed - 250 * deltaTime, 180);
+					speed = Math.max(speed - 550 * deltaTime, 850);
 
 				if (
-					speed <= 250 &&
+					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth * 2 &&
+					speed > 280
+				)
+					speed = Math.max(speed - 2050 * deltaTime, 320);
+
+
+				if (
+					speed <= 380 &&
 					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 <= 5 &&
 					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 >= -5
 				)
@@ -95,26 +96,41 @@
 		animId = requestAnimationFrame(movement);
 	};
 
-	let indicatorBeforeStart = $state(false);
-
 	const stop = () => {
 		if (animId) cancelAnimationFrame(animId);
 		speed = 50;
 		isRunning = false;
 		isStopped = true;
 		startTime = undefined;
-		start();
+		setTimeout(start, 1000);
 	};
 
-	const run = () => {
-		stop();
-		indicatorBeforeStart = !indicatorBeforeStart;
-		left = 0;
-		speed = 1000;
-		startTime = new Date();
-		isRunning = true;
-		isStopped = false;
-		start();
+	const getWinId = async (callback: () => Promise<void>) => {
+		const response = await fetch('/lootbox');
+
+		if (response.status === 200) {
+            const data = await response.json();
+
+			rouletteData.winId = data.winId;
+
+            callback();
+		}
+
+        if(response.status == 401) {
+            tg.webapp.showAlert('Not enough tickets!')
+        }
+	};
+
+	const run = async () => {
+        getWinId(async () => {
+             stop();
+			left = 0;
+			speed = 1500;
+			startTime = new Date();
+			isRunning = true;
+			isStopped = false;
+			start();
+        });
 	};
 
 	let showCongrat = $derived(isStopped && !isRunning);
@@ -124,35 +140,41 @@
 
 <div class="wheel">
 	<div class="wheel_indicator"></div>
-    <p class="wheel_message">1 Ticket = 1 Spin</p>
-    <p class="wheel_balance"><b>{ user.value?.wallet.tickets }</b> tickets</p>
+	<p class="wheel_message">
+		Open for {user.value?.wallet.spins.length === 0 ? 'free' : '1 ticket'}
+	</p>
+	<p class="wheel_balance"><b>{user.value?.wallet.tickets}</b> tickets</p>
 	<div class="wheel-wrapper" bind:this={wheel}>
 		<ul class="wheel-elems" bind:this={wheelList} style:--width={`${wheelElemWidth}px`}>
-			{#key indicatorBeforeStart}
 				{#each rouletteData.items as item (item.id)}
 					<li data-id={item.id}>
-						<img src={item.img === 'coin' ? '/coin.png' : '/ticket.png'} alt="" />
+						<img src={item.type === 'coin' ? '/coin.png' : '/ticket.png'} alt="" />
 						<p class="total">{formatNumber(item.total)}</p>
 					</li>
 				{/each}
-			{/key}
 		</ul>
 	</div>
 
-	<button type="button" class="wheel_button" onclick={run} disabled={isRunning}>Spin</button>
+	<Button class="wheel_button" onclick={run} disabled={isRunning}>Spin</Button>
 </div>
 {#if showCongrat}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div in:fade out:fade class="wheel-congrat" onclick={() => {
-        isStopped = false;
-    }}>
+	<div
+		in:fade
+		out:fade
+		class="wheel-congrat"
+		onclick={() => {
+            if(user.value?.wallet.spins.length === 0) goto('/')
+			else isStopped = false;
+		}}
+	>
 		<h2>Congratulations!<br />You won</h2>
 
 		<div class="wheel-congrat-prize">
 			<div class="icon">
 				<img
-					src={rouletteData.items[rouletteData.winId].img === 'coin'
+					src={rouletteData.items[rouletteData.winId].type === 'coin'
 						? '/coin.png'
 						: '/ticket.png'}
 					alt=""
@@ -169,11 +191,11 @@
 			Share with your friends to see if they can compete!
 		</p>
 		<div class="buttons">
-			<button
-				type="button"
+			<Button
 				onclick={() => {
 					let url = `https://t.me/BeamBotDevRobot/?start=${user.value?.account.inviteCode}`;
-					let shareText = `I just scored an AMAZING prize ${formatNumber(rouletteData.items[rouletteData.winId].total || 0)} ${rouletteData.items[rouletteData.winId].img === 'coin' ? 'coins' : 'tickets'} from the lootbox on BeamBot! 🎉\n\nYou HAVE to check it out – the rewards are epic!\n\nJoin me on BeamBot and get your own surprise lootbox reward. Trust me, you don't want to miss out on this!\n\nLet's see what you win! 🚀✨
+					let shareText =
+						`I just scored an AMAZING prize ${formatNumber(rouletteData.items[rouletteData.winId].total || 0)} ${rouletteData.items[rouletteData.winId].type === 'coin' ? 'coins' : 'tickets'} from the lootbox on BeamBot! 🎉\n\nYou HAVE to check it out – the rewards are epic!\n\nJoin me on BeamBot and get your own surprise lootbox reward. Trust me, you don't want to miss out on this!\n\nLet's see what you win! 🚀✨
                     `.trim();
 
 					tg.webapp.openTelegramLink(
@@ -182,14 +204,14 @@
 							'&text=' +
 							encodeURIComponent(shareText)
 					);
-                    isStopped = false;
-				}}>Share</button
-			>
-			<button
-				type="button"
-				onclick={() => {
 					isStopped = false;
-				}}>Close</button
+				}}>Share</Button
+			>
+			<Button
+				onclick={() => {
+                    if(user.value?.wallet.spins.length === 0) goto('/')
+					else isStopped = false;
+				}}>Close</Button
 			>
 		</div>
 	</div>
@@ -197,7 +219,7 @@
 
 <style lang="scss">
 	.wheel {
-        margin-bottom: -10%;
+		margin-bottom: -10%;
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
@@ -205,23 +227,24 @@
 		width: 100%;
 		position: relative;
 
-        &_message, &_balance {
-            position: absolute;
-            bottom: calc(100% + 10px); 
-            font-size: 16px;
-            text-shadow: 1px 1px 1px black;
-        }
-        &_message {
-            left: 0;
-        }
-        &_balance {
-            right: 0;
-            b {
-                font-weight: 400;
-                font-size: 18px;
-                color: #F2EC00;
-            }
-        }
+		&_message,
+		&_balance {
+			position: absolute;
+			bottom: calc(100% + 10px);
+			font-size: 16px;
+			text-shadow: 1px 1px 1px black;
+		}
+		&_message {
+			left: 0;
+		}
+		&_balance {
+			right: 0;
+			b {
+				font-weight: 400;
+				font-size: 18px;
+				color: #f2ec00;
+			}
+		}
 
 		&-congrat {
 			position: absolute;
@@ -249,9 +272,13 @@
 
 			.buttons {
 				display: grid;
-                grid-template-columns: 1fr 2fr;
-				gap: 20px;
-                width: 70%;
+				grid-template-columns: 1fr 2fr;
+				gap: 10px;
+				width: 70%;
+				margin-bottom: 10%;
+				:global(.button:nth-child(2)) {
+					width: 100%;
+				}
 			}
 
 			h2 {
@@ -414,7 +441,7 @@
 
 		&-elems {
 			margin-left: calc(-1 * var(--width));
-			padding: 20px;
+			padding: 15px;
 			display: flex;
 			width: 100%;
 			height: 100%;

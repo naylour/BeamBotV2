@@ -1,0 +1,12 @@
+model Partner {
+    id Int @id @default(autoincrement())
+
+    name       String @unique
+    inviteCode String @unique @default(cuid())
+    users      User[]
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("partners")
+}

@@ -12,6 +12,13 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 
+        interface SpinType {
+            total: number;
+            chance: number;
+            type: 'coin' | 'ticket',
+            id: number
+        }
+
         interface User extends UserType {}
         interface ExchangesData {
             address: string;
@@ -59,6 +66,9 @@ declare global {
             show: ClearFunc;
             onClick: (callback: ClearFunc) => {}
             offClick: (callback: ClearFunc) => {}
+        };
+        HapticFeedback: {
+            impactOccurred: (type: 'light' | 'heavy' | 'rigid' | 'soft' | 'medium') => void
         };
         showAlert: (text: string) => any;
         openLink: (text: string) => any;

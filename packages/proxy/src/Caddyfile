@@ -3,6 +3,10 @@ $rootPath {
 		reverse_proxy http://localhost:$botPort
 	}
 
+	basicauth /db* {
+		admin $2a$14$66WLZF59VjkP6YR4ef1uyOhM2vjooBVodcD5PhqS5QuQfAVjzZAyK
+	}
+
 	encode gzip
 
 	@websockets {

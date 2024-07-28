@@ -19,16 +19,29 @@ export default (prisma: PrismaClient) => ({
                     level: true,
                     inviteCode: true,
                     updatedAt: true,
+                    heSeeWelcomeScreen: true,
                     createdAt: true,
-                    reward: true
                 }
             },
             wallet: {
                 select: {
+                    reward: true,
                     coins: true,
                     tickets: true,
                     updatedAt: true,
-                    createdAt: true
+                    createdAt: true,
+                    spins: {
+                        select: {
+                            amount: true,
+                            type: true,
+                            createdAt: true,
+                            updatedAt: true
+                        },
+                        take: 1,
+                        orderBy: {
+                            createdAt: 'desc'
+                        }
+                    }
                 }
             },
             refferAccount: {
@@ -42,6 +55,12 @@ export default (prisma: PrismaClient) => ({
                             User: true,
                         }
                     }
+                }
+            },
+            Partner: {
+                select: {
+                    name: true,
+                    inviteCode: true
                 }
             }
         };

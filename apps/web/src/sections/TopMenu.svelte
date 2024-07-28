@@ -132,9 +132,9 @@
 				&::before {
 					content: '';
 					position: absolute;
-					top: 3px;
+					top: 4px;
 					left: 0;
-					rotate: -4.5deg;
+					rotate: -5.4deg;
 					width: 100%;
 					height: 4px;
 					background-color: var(--color);

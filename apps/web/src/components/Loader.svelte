@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
 import { app } from 'stores';
+	import { fade } from 'svelte/transition';
 </script>
 
-{#if !dev && !app.value.loader.isLoad}
-<aside class="loader">
+{#if !app.value.loader.isLoad}
+<aside class="loader" in:fade out:fade>
 	<img src="/coin_large.png" alt="Loading..." />
 
     <h1>Loading...</h1>
@@ -29,9 +29,15 @@ import { app } from 'stores';
 		justify-content: center;
 		flex-direction: column;
 		gap: 10px;
+        z-index: 10000;
+
+        h1 {
+            margin-top: -10%;
+        }
+
 		img {
 			scale: 0.5;
-			animation: anim 2s linear infinite;
+			animation: anim 3s linear infinite;
 		}
 	}
 

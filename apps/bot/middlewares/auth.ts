@@ -1,14 +1,29 @@
 import type { Middleware } from "grammy";
 import type Context from "../src/context.ts";
-import prisma, { user as User } from '@repo/db';
+import { user as User } from '@repo/db';
+import { getAccountAge } from '@repo/utils/telegram';
+import { calculateIncrement } from '@repo/utils/number';
+import { splitByFirstSpace } from "@repo/utils/string";
 
 export default (async (__context__, next) => {
     try {
-        let isInviter = false;
-        const message = __context__.message?.text?.split(' ');
+        const age = getAccountAge(__context__.data.id);
 
-        if(message && message.length === 2 && message[0] === '/start' && message?.[1])
-            isInviter = true;
+        let fromInviter = false;
+
+        const message = splitByFirstSpace(__context__.message?.text || '');
+
+        if(message.length <= 0) return;
+
+        if(message.length > 2) return;
+
+
+        if(message[0] === '/start' && message?.[1])
+            fromInviter = true;
+
+        let isPartnerInvite = false;
+
+        if(message[1]?.startsWith('PaRtNeR')) isPartnerInvite = true;
         
         const user = await User.findOrCreate({
             where: { id: __context__.data.id },
@@ -19,18 +34,26 @@ export default (async (__context__, next) => {
                 username: __context__.data.username,
                 isPremium: __context__.data.isPremium,
                 isHeInvited: true,
+                Partner: isPartnerInvite ? {
+                    connect: {
+                        inviteCode: message[1].slice(7)
+                    }
+                } : undefined,
                 account: {
                     create: {
-                        reward: {
-                            create: {}
-                        }
+                        age,
                     }
                 },
                 role: 'REGULAR',
                 wallet: {
-                    create: {}
+                    create: {
+                        reward: {
+                            create: {}
+                        },
+                        coins: calculateIncrement(7500, age) + (__context__.data.isPremium ? 500 : 0)
+                    }
                 },
-                refferAccount: isInviter ? {
+                refferAccount: fromInviter && !isPartnerInvite ? {
                     create: {
                         OneWhoInvited: {
                             connect: {
@@ -42,14 +65,15 @@ export default (async (__context__, next) => {
             }
         });
 
-        if(user.refferAccount && isInviter) {
+        if(user.refferAccount && fromInviter) {
             await __context__.api.sendMessage(user.refferAccount.OneWhoInvited.User.id, `У вас новый реферал! @${user.username}`)
         }
 
         __context__.user = user;
 
         await next();
-    } catch {
+    } catch(__error__) {
+        console.log(__error__)
         await __context__.reply('Ошибка при авторизации!');
     }
 }) as Middleware<Context>;

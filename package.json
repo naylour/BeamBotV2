@@ -2,11 +2,12 @@
     "name": "@neatteam/webapp-core",
     "private": true,
     "scripts": {
-        "build": "bun config:gen && bun --bun turbo build",
+        "build": "bun --bun turbo build",
         "dev": "bun --bun turbo watch dev",
         "config:gen": "bun --bun turbo config:gen",
         "lint": "turbo lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "prod": "bun --bun turbo prod"
     },
     "devDependencies": {
         "@tg-app/types": "^1.0.2",

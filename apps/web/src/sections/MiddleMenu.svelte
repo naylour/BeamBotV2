@@ -7,13 +7,13 @@
     <ul class="menu-list">
         <li class="menu-item">
             <Link class="menu_link" href="/tasks">
-                <img src="/tasks.svg" alt="">
+                <img width="40px" height="50px" src="/tasks.svg" alt="">
                 Tasks
             </Link>
         </li>
         <li class="menu-item">
             <Link class="menu_link" href="/lootbox">
-                <img src="/lootbox.svg" alt="">
+                <img width="40px" height="50px" src="/lootbox.svg" alt="">
                 Lootbox
             </Link>
         </li>
@@ -22,7 +22,7 @@
                 __event__.preventDefault();
                 tg.webapp.showAlert('Coming soon...')
             }}>
-                <img src="/shop.svg" alt="">
+                <img width="40px" height="50px" src="/shop.svg" alt="">
                 Shop
             </Link>
         </li>
@@ -31,7 +31,7 @@
                 __event__.preventDefault();
                 tg.webapp.showAlert('Coming soon...')
             }}>
-                <img src="/treasury.svg" alt="">
+                <img width="40px" height="50px" src="/treasury.svg" alt="">
                 Treasury
             </Link>
         </li>
@@ -76,16 +76,17 @@
             :global(.menu_link) {
                 padding: 5px;
                 height: 60px;
-                display: flex;
-                justify-content: space-between;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
                 align-items: end;
                 gap: 5px;
                 font-size: 18px;
                 box-shadow: 1px 1px 2px black;
+                text-align: right;
             }
 
             :global(.menu_link img) {
-                margin: auto 0;
+                // width: auto;
                 height: 100%;
                 aspect-ratio: 1 / 1;
                 object-fit: contain;

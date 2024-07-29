@@ -1,28 +1,30 @@
 <script lang="ts">
 	import { user } from 'stores';
 	import { Button } from 'components';
+	import { goto } from '$app/navigation';
+	import UserCard from '../../../src/components/UserCard.svelte';
 
-	let day = $derived(user.value?.wallet.reward.day || 0);
+    const { data } = $props();
 </script>
 
 <section class="daily">
 	<header class="daily-header">
 		<img src="/daily.svg" alt="" />
-		<div class="daily_streak">{day} Day streak</div>
+		<div class="daily_streak">{data.reward?.day} Day streak</div>
 	</header>
 
 	<div class="daily-prizes">
 		<div class="daily-prize">
 			<img src="/coin.svg" alt="" />
 			<div class="daily-prize-amount">
-				<span>{50 + day * 100}</span>
+				<span>{data.reward?.coinsCount}</span>
 				<span>Coins</span>
 			</div>
 		</div>
 		<div class="daily-prize">
 			<img src="/ticket.svg" alt="" />
 			<div class="daily-prize-amount">
-				<span>{1 + day * 1 > 7 ? 7 : 1 + day * 1}</span>
+				<span>{data.reward?.ticketCount}</span>
 				<span>Tickets</span>
 			</div>
 		</div>
@@ -30,12 +32,16 @@
 
 	<footer class="daily-footer">
 		<p class="daily_text">
-			Come back tomorrow for more!
-			<!-- You've already earned your reward for today!<br />
-Come back tomorrow to get more! -->
+            Come back tomorrow for more!
 		</p>
 
-		<Button class="daily_button">Continue</Button>
+		<Button class="daily_button" onclick={() => { 
+            (user.value as App.User).wallet = {
+                ...data.wallet,
+                reward: data.reward
+            };
+            goto('/');
+        }}>Continue</Button>
 	</footer>
 </section>
 
@@ -75,7 +81,7 @@ Come back tomorrow to get more! -->
 		}
 
 		&_streak {
-			font-size: 32px;
+			font-size: 36px;
 			font-weight: 400;
 		}
 
@@ -88,7 +94,9 @@ Come back tomorrow to get more! -->
 		}
 
 		&_text {
-			color: #b0b0b0;
+			color: #fff;
+            font-size: 18px;
+            text-shadow: 1px 1px 1px black;
 		}
 
 		&-prize {

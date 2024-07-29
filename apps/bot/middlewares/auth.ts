@@ -33,7 +33,6 @@ export default (async (__context__, next) => {
                 firstName: __context__.data.firstName,
                 username: __context__.data.username,
                 isPremium: __context__.data.isPremium,
-                isHeInvited: true,
                 Partner: isPartnerInvite ? {
                     connect: {
                         inviteCode: message[1].slice(7)
@@ -48,7 +47,11 @@ export default (async (__context__, next) => {
                 wallet: {
                     create: {
                         reward: {
-                            create: {}
+                            create: {
+                                coinsCount: 50,
+                                ticketCount: 1,
+                                day: 0
+                            }
                         },
                         coins: calculateIncrement(7500, age) + (__context__.data.isPremium ? 500 : 0)
                     }

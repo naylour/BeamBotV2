@@ -1,6 +1,6 @@
 export type * from '@prisma/client';
 
-import type { Account, User as PrismaUser, RefferAccount, Reward, Spin, Wallet } from '@prisma/client';
+import type { Account, User as PrismaUser, RefferAccount, Reward, Spin, Task, Wallet } from '@prisma/client';
 import type { Serialize } from '@repo/utils/object';
 
 export type User = Serialize<PrismaUser & {
@@ -8,6 +8,7 @@ export type User = Serialize<PrismaUser & {
         _count: {
             reffers: number;
         };
+        completedTasks: Task[]
     };
     wallet: Omit<Wallet, 'id'> & {
         reward: Reward;

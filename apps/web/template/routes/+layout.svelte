@@ -7,6 +7,19 @@
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
+	function isMoreThan24HoursAgo(date: Date, dayCount = 1): boolean {
+		// Текущая дата и время
+		const now = new Date();
+
+		// Разница во времени в миллисекундах
+		const diffInMillis = now.getTime() - date.getTime();
+
+		// Переводим миллисекунды в часы
+		const diffInHours = diffInMillis / (1000 * 60 * 60);
+
+		// Проверяем, прошло ли более 24 часов
+		return diffInHours > 24 * dayCount;
+	}
 
 	onMount(() => {
 		if (
@@ -15,28 +28,27 @@
 		)
 			tg.afterInit(() => user.init(tg.webapp.initData));
 		else {
-            user.value = data.user as App.User;
+			user.value = data.user as App.User;
 
-            setTimeout(() => app.value.loader.isLoad = true, 600);
-        }
-        if (user.value?.account.heSeeWelcomeScreen && $page.url.pathname === '/welcome') goto('/');
-
-        else if (user.value?.wallet.spins.length === 0  && $page.url.pathname !== '/lootbox') goto('/lootbox');
-
-        else if (!user.value?.wallet.reward.lastReward) {
-            // goto('/daily');
-        }
+			setTimeout(() => (app.value.loader.isLoad = true), 600);
+		}
+		if (user.value?.account.heSeeWelcomeScreen && $page.url.pathname === '/welcome') goto('/');
+		else if (user.value?.wallet.spins.length === 0 && $page.url.pathname !== '/lootbox')
+			goto('/lootbox');
+		else if (!user.value?.wallet.reward.lastReward) {
+			goto('/daily');
+		}
 	});
 
 	beforeNavigate((navigate) => {
-		if (!app.value.loader.isLoad) navigate.cancel();
-        if (!user.value?.account.heSeeWelcomeScreen && navigate.to?.url.pathname === '/welcome') navigate.cancel();
+		if (!user.value?.account.heSeeWelcomeScreen && navigate.to?.url.pathname === '/welcome')
+			navigate.cancel();
 	});
 
 	const { children, data } = $props();
 
 	$inspect(user.value);
-    $inspect(tg.value)
+	$inspect(tg.value);
 </script>
 
 {@render children()}

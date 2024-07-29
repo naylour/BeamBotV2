@@ -11,7 +11,7 @@
 
         <div class="user-data">
             <p class="user_username">{ user.value?.username || 'Anonimus' }</p>
-            <p class="user_level">Day: { user.value?.wallet.reward.day || 0 }</p>
+            <p class="user_level">Day: { user.value?.wallet.reward?.day || 0 }</p>
         </div></Link>
 </div>
 

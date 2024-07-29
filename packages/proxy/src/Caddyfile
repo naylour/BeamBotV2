@@ -3,12 +3,6 @@ $rootPath {
 		reverse_proxy http://localhost:$botPort
 	}
 
-	basicauth /db* {
-		admin $2a$14$66WLZF59VjkP6YR4ef1uyOhM2vjooBVodcD5PhqS5QuQfAVjzZAyK
-	}
-
-	encode gzip
-
 	@websockets {
 		header Connection *Upgrade*
 		header Upgrade websocket
@@ -33,4 +27,12 @@ $rootPath {
 		header_up X-Forwarded-Port {server_port}
 		header_up X-Forwarded-Proto {scheme}
 	}
+}
+
+db.$rootPath {
+	basicauth / {
+		admin $2a$14$66WLZF59VjkP6YR4ef1uyOhM2vjooBVodcD5PhqS5QuQfAVjzZAyK
+	}
+
+	reverse_proxy http://localhost:5555
 }

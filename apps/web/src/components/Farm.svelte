@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
+	import { onMount } from 'svelte';
 	import Button from './Button.svelte';
+    import type { Farm } from '@repo/db/types';
+	import {user} from 'stores';
 
 	let claimInterval = $state<ReturnType<typeof setInterval>>();
 	let farmDate = $state<Date>();
@@ -21,42 +23,88 @@
 	const peerASecond = 0.01;
 	const totalSeconds = 8 * 60 * 60;
 
-	let current = $state(calculateDateDifferenceInSeconds(farmDate || new Date()) * peerASecond);
+	let current = $state(0);
 
 	let leftSeconds = $state(0);
 
 	let status = $state<'start' | 'process' | 'claim'>('start');
 
-	const start = () => {
-		status = 'process';
-
-		farmDate = new Date();
-
-		leftSeconds = calculateDateDifferenceInSeconds(farmDate || new Date());
-
-		claimInterval = setInterval(() => {
+    const calculation = () => {
+        claimInterval = setInterval(() => {
 			if (leftSeconds < totalSeconds) {
 				current += 0.01;
 				leftSeconds += 1;
 			} else {
 				status = 'claim';
 			}
-		}, 1);
+		}, 1000);
+    }
+
+    const createFarm = async () => {
+        const response = await fetch('/api/farm', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(response.status == 200) {
+            const data = await response.json() as {
+                createdAt: string
+            }
+            startFarm(new Date(data.createdAt))
+        }
+    }
+
+	const startFarm = (date: Date) => {
+		status = 'process';
+
+        farmDate = date;
+
+        current = calculateDateDifferenceInSeconds(farmDate || new Date()) * peerASecond
+		leftSeconds = calculateDateDifferenceInSeconds(farmDate || new Date());
+
+        calculation();
 	};
 
-	const claim = () => {
+	const claim = async () => {
+        const response = await fetch('/api/farm', {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if(response.status) {
+            const data = await response.json();
+            (user.value as App.User).wallet.coins = data.coins
+        }
 		status = 'start';
 		current = 0;
 		farmDate = undefined;
-
-		claimInterval && clearInterval(claimInterval);
+        
+        claimInterval && clearInterval(claimInterval);
 	};
+
+    onMount(async () => {
+        const response = await fetch('/api/farm', {
+            method: 'get'
+        });
+
+        if(response.status == 200) {
+            const data = await response.json() as Farm;
+
+            if(Object.keys(data).length === 0) status = 'start';
+
+            else startFarm(new Date(data.createdAt))
+        }
+    });
 </script>
 
 <div class="farm">
 	<img src="./tasks_icon.svg" alt="" />
 	{#if status === 'start'}
-    <Button onclick={start}>Start farm</Button>
+        <Button onclick={createFarm}>Start farm</Button>
 	{:else if status === 'process'}
 		<div class="farm-header">
 			Farming: <b>{current.toFixed(2)}</b>
@@ -99,9 +147,24 @@
 			opacity: 0.2;
 		}
 
-		button {
-			padding: 5px 20px;
-		}
+        :global(.button) {
+           padding: 2px 10px; 
+           font-size: 16px;
+        }
+
+        &-claim {
+            font-size: 18px;
+        }
+
+        &-header {
+            font-size: 20px;
+            font-weight: 400;
+            b {
+                color: #FFF326;
+                font-weight: 500;
+            }
+            // background-color: rgba(#2a2d88, 0.65);
+        }
 
 		&-loader {
 			position: relative;
@@ -118,7 +181,7 @@
 				top: 50%;
 				left: 4px;
 				translate: 0 -50%;
-				background-color: #fcb500;
+				background-color: #FFF326;
 				height: 14px;
 				width: calc(var(--process) - 8px);
 				border-radius: 2px;
@@ -128,8 +191,11 @@
 				position: absolute;
 				top: 50%;
 				left: 50%;
+                padding: 5px 10px;
 				translate: -50% -50%;
-				font-size: 12px;
+				font-size: 14px;
+                border-radius: 4px;
+                background-color: rgba(#100f41, .9);
 			}
 		}
 	}

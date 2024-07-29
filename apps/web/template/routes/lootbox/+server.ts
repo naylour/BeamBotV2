@@ -14,6 +14,8 @@ function getRandomItemId(items: { id: number; chance: number }[]): number {
         }
     }
 
+    
+
     return items[0].id;
 }
 
@@ -21,18 +23,22 @@ export const GET: RequestHandler = async ({ locals }) => {
     try {
         let spinElems: App.SpinType[];
 
+        
         if (locals.user?.wallet.spins.length === 0) spinElems = (await prisma.appData.findUnique({
             where: { title: 'spinFree' }
         }))?.data as unknown as App.SpinType[];
         else spinElems = (await prisma.appData.findUnique({
             where: { title: 'spin' }
         }))?.data as unknown as App.SpinType[];
-
+        
         const winId = getRandomItemId(spinElems);
         const winElem = spinElems.find(elem => elem.id === winId);
 
         const userWallet =await prisma.wallet.findUnique({
             where: { id: locals.user?.id },
+            include: {
+                spins: true
+            }
         });
 
         if(!userWallet) return error(500);
@@ -45,7 +51,7 @@ export const GET: RequestHandler = async ({ locals }) => {
                     increment: winElem?.type === 'coin' ? winElem?.total as number : 0
                 },
                 tickets: {
-                    increment: (winElem?.type === 'ticket' ? winElem?.total as number : 0) - (locals.user?.wallet.spins.length === 0 ? 0 : 1)
+                    increment: (winElem?.type === 'ticket' ? winElem?.total as number : 0) - (userWallet?.spins.length === 0 ? 0 : 1)
                 },
                 spins: {
                     create: {

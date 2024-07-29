@@ -17,6 +17,7 @@ export default (prisma: PrismaClient) => ({
                     _count: true,
                     age: true,
                     level: true,
+                    completedTasks: true,
                     inviteCode: true,
                     updatedAt: true,
                     heSeeWelcomeScreen: true,

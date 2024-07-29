@@ -1,34 +1,95 @@
 <script lang="ts">
 	import { Button } from 'components';
 	import { formatNumber } from '@repo/utils/number';
+	import { tg, user } from 'stores';
+
+    const icons = {
+        'Telegram': "/tg.svg",
+        'X': "/x.svg",
+        'Instagram': "/inst.svg",
+    }
 
 	type Props = {
 		title: string;
-		icon: string;
+		icon: keyof typeof icons;
 		amount: number;
-		type: 'coin' | 'ticket';
+		type: 'Coin' | 'Ticket';
+        link: string;
+        id: number;
+        chatId: string | null;
 	};
-	const { title, icon, amount, type }: Props = $props();
+
+	const { title, icon, amount, type, link, id, chatId }: Props = $props();
+
+    let action = $state<'start' | 'check'>('start');
+    let isDone = $derived(!!user.value?.account.completedTasks.find(elem => elem.id === id));
+    let checks = $state(10);
+
+    $inspect(isDone)
 </script>
 
-<Button class="task">
+<Button class="task{isDone ? ' complete' : ''}" disabled={checks > 0 && checks < 10} onclick={async () => {
+
+    if(action == 'start') {
+        if(link.startsWith('https://t.me')) {
+            tg.webapp.openTelegramLink(link);
+            action = 'check';
+        }
+        else {
+            const interval = setInterval(() => {
+                if(checks === 1) {
+                    action = 'check';
+                    clearInterval(interval);
+                }
+                checks--;
+            }, 1000);
+            tg.webapp.openLink(link);
+        }
+    } else if(action == 'check' && !isDone) {
+        const response = await fetch('/tasks', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                action: chatId ? 'tg-task' : 'task',
+                taskId: id
+            })
+        });
+
+        if(response.status === 200) {
+            const data = await response.json()
+            user.value?.account.completedTasks.push(data.task);
+            (user.value as App.User).wallet = data.wallet;
+
+            tg.webapp.showAlert(`You’ve received ${amount} ${type}!`);
+        }
+        else {
+            tg.webapp.showAlert('Task not complete!');
+            action = 'start'
+        }
+    }
+}}>
 	<div class="task-content">
-		<img src={icon} alt="" />
+		<img src={icons[icon]} alt="" />
 		<div class="task-task">
 			<h3 class="task_title">{title}</h3>
 			<div class="task_amount">
 				+{formatNumber(amount || 0)}
-				{type === 'coin' ? 'coins' : 'tickets'}
+				{type === 'Coin' ? 'coins' : 'tickets'}
 			</div>
 		</div>
 
-        <span class="task_action">Action</span>
+        <span class="task_action">{ isDone ? 'DONE' : checks > 0 && checks < 9 ? checks : action.toUpperCase() }</span>
 	</div>
 </Button>
 
 <style lang="scss">
 	$class: '.task';
 
+    :global(.complete .button-bg--blue) {
+        background-color: darken(grey, 30%);
+    }
 	#{$class} {
 		&-content {
             position: relative;
@@ -55,6 +116,7 @@
             font-size: 12px;
             font-family: inherit;
             font-weight: 400;
+            width: 8ch;
             // text-shadow: 1px 1px 1px black;
         }
 		&-task {
@@ -67,7 +129,7 @@
 		&_title {
 			font-weight: 500;
 			overflow: hidden;
-			width: 25ch;
+			width: 22ch;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			text-align-last: left;

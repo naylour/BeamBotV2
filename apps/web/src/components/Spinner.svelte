@@ -4,15 +4,19 @@
 	import { fade } from 'svelte/transition';
 	import { tg, user } from 'stores';
 	import Button from './Button.svelte';
-	import { goto } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
+	import { dev } from '$app/environment';
+	import { redirect } from '@sveltejs/kit';
 
 	const {
-		rouletteData
+		rouletteData,
+        callback
 	}: {
 		rouletteData: {
 			items: App.SpinType[];
 			winId: number;
 		};
+        callback: () => Promise<void>
 	} = $props();
 
 	let wheel = $state<HTMLDivElement>();
@@ -22,7 +26,7 @@
 	let wheelElemWidth = $derived((wheelList?.clientWidth || 1) / 3 - 15 * 2);
 	let step = $state(0);
 
-	let speed = $state(100);
+	let speed = $state(50);
 
 	let lastTimestamp = $state(0);
 
@@ -31,6 +35,10 @@
 	let startTime = $state<Date>();
 	let isRunning = $state(false);
 	let isStopped = $state(false);
+
+    beforeNavigate(nav => {
+        if(isRunning) nav.cancel()
+    })
 
 	const movement = (timeStamp: number) => {
 		const deltaTime = (timeStamp - lastTimestamp) / 1000;
@@ -45,14 +53,12 @@
 				wheelList.insertAdjacentElement('beforeend', firstChild);
 
 				// left = (wheel?.getBoundingClientRect().width || 1) / (wheelElemWidth * 3 + );
-				left = -15;
+				left = -16;
 			}
 
 			step++;
 
 			left += speed * deltaTime;
-
-			// if(isRunning) speed = Math.max(speed - 110 * deltaTime, 50);
 
 			if (isRunning && new Date().getSeconds() - (startTime?.getSeconds() || 0) > 1) {
 				const elem = document.querySelector(
@@ -61,25 +67,23 @@
 
 				const elemLeft = elem.getBoundingClientRect().left;
 
+                if (
+					// speed <= 250 &&
+					elemLeft + wheelElemWidth / 1.5 - (wheel?.offsetWidth || 1) / 2 <= 5 &&
+					elemLeft + wheelElemWidth / 1.5 - (wheel?.offsetWidth || 1) / 2 >= -5
+				) return stop();
+
 				if (
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth * 4 &&
+					elemLeft + wheelElemWidth / 1.5 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth * 4 &&
 					speed > 450
 				)
-					speed = Math.max(speed - 550 * deltaTime, 850);
+					speed = Math.max(speed - 750 * deltaTime, 850);
 
 				if (
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth * 2 &&
-					speed > 280
+					elemLeft + wheelElemWidth / 1.5 - (wheel?.offsetWidth || 1) / 2 > wheelElemWidth &&
+					speed > 200
 				)
-					speed = Math.max(speed - 2050 * deltaTime, 320);
-
-
-				if (
-					speed <= 380 &&
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 <= 5 &&
-					elemLeft + wheelElemWidth / 2 - (wheel?.offsetWidth || 1) / 2 >= -5
-				)
-					return stop();
+					speed = Math.max(speed - 2050 * deltaTime, 220);
 			}
 
 			const items = Array.from(wheelList.children) as HTMLLIElement[];
@@ -109,28 +113,42 @@
 		const response = await fetch('/lootbox');
 
 		if (response.status === 200) {
-            const data = await response.json();
+			const data = await response.json();
 
 			rouletteData.winId = data.winId;
 
-            callback();
+			callback();
 		}
 
-        if(response.status == 401) {
-            tg.webapp.showAlert('Not enough tickets!')
-        }
+		if (response.status == 401) {
+			tg.webapp.showAlert('Not enough tickets!');
+		}
 	};
 
 	const run = async () => {
-        getWinId(async () => {
-             stop();
+		getWinId(async () => {
+			stop();
 			left = 0;
-			speed = 1500;
+			speed = 1200;
 			startTime = new Date();
 			isRunning = true;
 			isStopped = false;
 			start();
+		});
+	};
+	const close = async () => {
+		if (user.value?.wallet.spins.length !== 0) {
+            isStopped = false;
+            await callback()
+        } else {
+            goto('/daily');
+        }
+        const updatedData = await fetch('/api/user', {
+            method: 'get'
         });
+        if (updatedData.status === 200) {
+            user.value = await updatedData.json();
+        }
 	};
 
 	let showCongrat = $derived(isStopped && !isRunning);
@@ -138,20 +156,32 @@
 	onMount(start);
 </script>
 
+<!-- {#if dev}
+    <div class="dev">
+        <p>Elem width: { wheelElemWidth }</p>
+        <p>List ml: { left.toFixed(2) }</p>
+        <p>Speed: { speed.toFixed() }</p>
+        <p>isRunning: { isRunning }</p>
+        <p>isStopped: { isStopped }</p>
+    </div>
+{/if} -->
+
 <div class="wheel">
 	<div class="wheel_indicator"></div>
-	<p class="wheel_message">
-		Open for {user.value?.wallet.spins.length === 0 ? 'free' : '1 ticket'}
-	</p>
-	<p class="wheel_balance"><b>{user.value?.wallet.tickets}</b> tickets</p>
+    {#if user.value?.wallet.spins.length !== 0}
+         <p class="wheel_message">
+             Open for 1 ticket
+         </p>
+         <p class="wheel_balance"><b>{user.value?.wallet.tickets}</b> tickets</p>
+    {/if}
 	<div class="wheel-wrapper" bind:this={wheel}>
 		<ul class="wheel-elems" bind:this={wheelList} style:--width={`${wheelElemWidth}px`}>
-				{#each rouletteData.items as item (item.id)}
-					<li data-id={item.id}>
-						<img src={item.type === 'coin' ? '/coin.png' : '/ticket.png'} alt="" />
-						<p class="total">{formatNumber(item.total)}</p>
-					</li>
-				{/each}
+			{#each rouletteData.items as item (item.id)}
+				<li data-id={item.id}>
+					<img src={item.type === 'coin' ? '/coin.png' : '/ticket.png'} alt="" />
+					<p class="total">{formatNumber(item.total)}</p>
+				</li>
+			{/each}
 		</ul>
 	</div>
 
@@ -160,26 +190,18 @@
 {#if showCongrat}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div
-		in:fade
-		out:fade
-		class="wheel-congrat"
-		onclick={() => {
-            if(user.value?.wallet.spins.length === 0) goto('/')
-			else isStopped = false;
-		}}
-	>
+	<div in:fade out:fade class="wheel-congrat" onclick={close}>
 		<h2>Congratulations!<br />You won</h2>
 
 		<div class="wheel-congrat-prize">
 			<div class="icon">
 				<img
-					src={rouletteData.items[rouletteData.winId].type === 'coin'
+					src={rouletteData.items[rouletteData.winId]?.type === 'coin'
 						? '/coin.png'
 						: '/ticket.png'}
 					alt=""
 				/>
-				<p>{formatNumber(rouletteData.items[rouletteData.winId].total || 0)}</p>
+				<p>{formatNumber(rouletteData.items[rouletteData.winId]?.total || 0)}</p>
 			</div>
 			<div class="sun">
 				<span></span><span></span><span></span><span></span><span></span><span></span><span
@@ -187,7 +209,7 @@
 			</div>
 		</div>
 		<p>
-			You’re amongst the luckiest {rouletteData.items[rouletteData.winId].chance}% of players!
+			You’re amongst the luckiest {rouletteData.items[rouletteData.winId]?.chance}% of players!
 			Share with your friends to see if they can compete!
 		</p>
 		<div class="buttons">
@@ -207,17 +229,20 @@
 					isStopped = false;
 				}}>Share</Button
 			>
-			<Button
-				onclick={() => {
-                    if(user.value?.wallet.spins.length === 0) goto('/')
-					else isStopped = false;
-				}}>Close</Button
-			>
+			<Button onclick={close}>Close</Button>
 		</div>
 	</div>
 {/if}
 
 <style lang="scss">
+    .dev {
+        position: absolute;
+        top: 5px; left: 5px;
+        padding: 10px;
+        font-size: 18px;
+        background-color: red;
+        border-radius: 12px;
+    }
 	.wheel {
 		margin-bottom: -10%;
 		display: flex;
@@ -276,6 +301,9 @@
 				gap: 10px;
 				width: 70%;
 				margin-bottom: 10%;
+				:global(.button) {
+                    padding: .2em;
+                }
 				:global(.button:nth-child(2)) {
 					width: 100%;
 				}

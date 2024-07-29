@@ -18,7 +18,7 @@ export class Telegram {
             });
 
             page.subscribe(pg => {
-                if(pg && pg.url && ['/', '/welcome', '/daily'].includes(pg.url.pathname)) this.webapp.BackButton.hide();
+                if(pg && pg.url && ['/', '/welcome'].includes(pg.url.pathname)) this.webapp.BackButton.hide();
                 else this.webapp.BackButton.show();
             });
 

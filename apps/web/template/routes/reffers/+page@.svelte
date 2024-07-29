@@ -70,7 +70,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
 		height: 100%;
 		gap: 20px;
 
@@ -103,9 +103,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
+            gap: 15px;
 
-            button:first-child {
+            :global(.button) {
+                padding: 2px;
+            }
+            :global(.button:first-child) {
                 width: 100%;
             }
 		}

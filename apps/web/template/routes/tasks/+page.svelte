@@ -1,52 +1,22 @@
 <script lang="ts">
 	import Button from './Button.svelte';
 
-    let tasks = $state< Record<
-		string,
-		{
-			title: string;
-			amount: number;
-			icon: string;
-			type: 'coin' | 'ticket';
-		}[]
-	>>({
-		daily: [
-			{
-				title: 'Join TG Group',
-				amount: 35000,
-				icon: '/tg.svg',
-				type: 'coin'
+	const groupBy = <T,>(array: T[], key: keyof T): { [key: string]: T[] } => {
+		return array.reduce(
+			(result, currentValue) => {
+				const groupKey = String(currentValue[key]);
+				if (!result[groupKey]) {
+					result[groupKey] = [];
+				}
+				result[groupKey].push(currentValue);
+				return result;
 			},
-			{
-				title: 'Follow our telegram channel',
-				amount: 10,
-				icon: '/tg.svg',
-				type: 'ticket'
-			}
-		],
-		general: [
-			{
-				title: 'Subscribe X channel',
-				amount: 10000,
-				icon: '/x.svg',
-				type: 'coin'
-			},
-			{
-				title: 'The loooooooooooooooooong task title',
-				amount: 1400000000,
-				icon: '/inst.svg',
-				type: 'ticket'
-			}
-		],
-		partners: [
-            {
-				title: 'Subscribe for BemBot team',
-				amount: 1000000,
-				icon: '/tg.svg',
-				type: 'coin',
-			},
-        ],
-	})
+			{} as { [key: string]: T[] }
+		);
+	};
+	const { data } = $props();
+
+	let tasks = $state(groupBy(data?.tasks || [], 'type'));
 </script>
 
 <section class="tasks">
@@ -57,7 +27,7 @@
 	</header>
 
 	<div class="tasks-blocks">
-		{#each Object.keys(tasks) as taskName, i(i)}
+		{#each Object.keys(tasks) as taskName, i (i)}
 			{#if tasks?.[taskName]?.length > 0}
 				<div class="tasks-block tasks-{taskName}">
 					<h3 class="tasks-block_title">{taskName} Tasks</h3>
@@ -65,8 +35,11 @@
 						<Button
 							title={item.title}
 							amount={item.amount}
-							type={item.type}
+							type={item.amountType}
 							icon={item.icon}
+							link={item.link}
+							id={item.id}
+							chatId={item.chatId}
 						></Button>
 					{/each}
 				</div>
@@ -77,10 +50,12 @@
 
 <style lang="scss">
 	.tasks {
+        padding: 20px 5px;
 		height: 100%;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
-		overflow-y: scroll;
+        overflow-y: scroll;
 
 		&-header {
 			display: flex;
@@ -98,7 +73,7 @@
 			font-weight: 400;
 			font-size: 30px;
 		}
-        
+
 		&_subtitle {
 			margin-top: 10px;
 			font-weight: 400;
@@ -114,6 +89,7 @@
 			flex-direction: column;
 			align-items: start;
 			gap: 20px;
+			width: 100%;
 		}
 
 		&-block {
@@ -123,14 +99,14 @@
 			width: 100%;
 
 			&_title {
-                text-transform: capitalize;
+				text-transform: capitalize;
 				margin-left: 16px;
 				font-size: 18px;
 				font-weight: 400;
 				text-shadow: 1px 1px 1px black;
 			}
-			button {
-				padding: 15px 25px;
+			:global(.button) {
+				padding: 5px 15px;
 				width: 100%;
 				display: flex;
 				align-items: center;
@@ -139,21 +115,21 @@
 				overflow: visible;
 
 				font-size: 14px;
-
-				&[data-done]::before {
-					background-color: #cecece;
-				}
-
-				div {
-					&:nth-child(2) {
-						display: flex;
-						flex-direction: column;
-						text-align-last: left;
-						justify-content: space-between;
-						gap: 5px;
-					}
-				}
 			}
+
+			// :global(.button[data-done]::before) {
+			// 	background-color: #cecece;
+			// }
+
+			// :global(.button div) {
+			// 	&:nth-child(2) {
+			// 		display: flex;
+			// 		flex-direction: column;
+			// 		text-align-last: left;
+			// 		justify-content: space-between;
+			// 		gap: 5px;
+			// 	}
+			// }
 		}
 	}
 </style>

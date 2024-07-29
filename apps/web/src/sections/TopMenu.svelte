@@ -105,19 +105,20 @@
 				align-items: center;
 				justify-content: space-between;
 				width: 100%;
-				// gap: 10px;
+				// gap: 2px;
 				height: 55%;
 				color: var(--color);
 				text-shadow: 0px 0px 1px #000;
 
 				img {
-					width: 60px !important;
-					height: 60px;
+                    // border-bottom: 1px solid red;
+					width: 60%;
 				}
 			}
 
 			&_label {
 				padding-top: 5px;
+                margin-bottom: -2px;
 				position: relative;
 				height: 40%;
 				display: flex;
@@ -134,7 +135,7 @@
 					position: absolute;
 					top: 4px;
 					left: 0;
-					rotate: -5.4deg;
+					rotate: -5.2deg;
 					width: 100%;
 					height: 4px;
 					background-color: var(--color);

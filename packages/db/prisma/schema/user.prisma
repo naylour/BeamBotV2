@@ -1,11 +1,10 @@
 model User {
     id BigInt @id
 
-    lastName    String? @map("last_name")
-    firstName   String? @map("first_name")
-    username    String? @unique
-    isPremium   Boolean
-    isHeInvited Boolean @default(false) @map("is_he_invited")
+    lastName  String? @map("last_name")
+    firstName String? @map("first_name")
+    username  String? @unique
+    isPremium Boolean
 
     role Roles @default(REGULAR)
 
@@ -39,6 +38,7 @@ model Account {
     reffers            RefferAccount[]
     level              Int             @default(0)
     heSeeWelcomeScreen Boolean         @default(false)
+    completedTasks     Task[]
 
     updatedAt DateTime @updatedAt @map("updated_at")
     createdAt DateTime @default(now()) @map("created_at")
@@ -55,6 +55,7 @@ model Wallet {
     tickets Int     @default(0)
     reward  Reward?
     spins   Spin[]
+    farms   Farm[]
 
     updatedAt DateTime @updatedAt @map("updated_at")
     createdAt DateTime @default(now()) @map("created_at")

@@ -177,7 +177,7 @@
 			padding: 40px 20px;
 			position: relative;
 			background-color: #878afa;
-			clip-path: polygon(0 5%, 100% 10%, 100% 95%, 0% 100%);
+			clip-path: polygon(0 5%, 100% 6%, 100% 95%, 0% 100%);
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -192,7 +192,7 @@
 			&::after {
 				content: '';
 
-				clip-path: polygon(0 5%, 100% 15%, 100% 90%, 0% 100%);
+				clip-path: polygon(0 5%, 100% 8%, 100% 94%, 0% 100%);
 				position: absolute;
 				top: 10px;
 				left: 10px;

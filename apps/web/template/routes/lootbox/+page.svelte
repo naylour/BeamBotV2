@@ -5,6 +5,8 @@
 	import { Spinner } from 'components';
 
     const { data } = $props();
+
+    let recents = $state(data.lastTenSpins);
 </script>
 
 <section class="spin">
@@ -17,7 +19,9 @@
         <Spinner rouletteData={{
             items: data.spinElems,
             winId: 1
-        }} />
+        }} callback={async () => {
+            recents = await (await fetch('/api/recent')).json()
+        }}/>
     </div>
 
 	<footer class="spin-footer recent">
@@ -25,7 +29,7 @@
 
 		<div class="recent-list--wrapper">
 			<ul class="recent-list">
-				{#each data.lastTenSpins as lastSpin, i(i)}
+				{#each recents as lastSpin, i(i)}
                 <li class="recent-list-item" style:--color={"#"+((1<<24)*Math.random()|0).toString(16)}>
 					<div>
                         <p class="recent_icon">{ lastSpin.Wallet?.User.username?.slice(0, 2) }</p>
@@ -44,7 +48,7 @@
 	.spin {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
+		justify-content: space-around;
 		height: 100%;
 		width: 100%;
 
@@ -67,8 +71,8 @@
 
 		.recent {
             &_title {
-                margin-bottom: 20px;
-                text-align: center;
+                margin-bottom: 10px;
+                // text-align: center;
                 font-weight: 500;
             }
 			&-list {
@@ -93,6 +97,7 @@
                     display: flex;
                     flex-direction: column;
                     align-items: center;
+                    justify-content: space-between;
                     gap: 5px;
                     overflow: hidden;
                     text-align: center;

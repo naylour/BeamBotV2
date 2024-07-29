@@ -1,0 +1,35 @@
+model Task {
+    id Int @id @default(autoincrement())
+
+    icon TaskIcon
+    type TaskType
+    title String
+    amount Int
+    amountType TaskAmountType
+    link String @default("")
+    chatId String?
+
+    usersCompleted Account[]
+
+    updatedAt DateTime @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("tasks")
+}
+
+enum TaskType {
+    General
+    Partners
+    Daily
+}
+
+enum TaskAmountType {
+    Coin
+    Ticket
+}
+
+enum TaskIcon {
+    Telegram
+    X
+    Instagram
+}

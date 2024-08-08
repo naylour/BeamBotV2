@@ -62,8 +62,41 @@ export const PUT: RequestHandler = async ({ locals }) => {
                     coins: {
                         increment: 0.01 * 60 * 60 * 8
                     }
+                },
+                include: {
+                    User: {
+                        select: {
+                            refferAccount: true
+                        }
+                    }
                 }
-            })
+            });
+
+            if(wallet.User.refferAccount) {
+                await prisma.refferAccount.update({
+                    where: { id: wallet.User.refferAccount.id },
+                    data: {
+                        earnedCoins: {
+                            increment: 0.01 * 60 * 60 * 8 * .15
+                        },
+                        OneWhoInvited: {
+                            update: {
+                                User: {
+                                    update: {
+                                        wallet: {
+                                            update: {
+                                                coins: {
+                                                    increment: 0.01 * 60 * 60 * 8 * .15
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
             return json(serialize(wallet));
         }
 

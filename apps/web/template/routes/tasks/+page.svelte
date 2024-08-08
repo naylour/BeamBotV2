@@ -30,7 +30,7 @@
 		{#each Object.keys(tasks) as taskName, i (i)}
 			{#if tasks?.[taskName]?.length > 0}
 				<div class="tasks-block tasks-{taskName}">
-					<h3 class="tasks-block_title">{taskName} Tasks</h3>
+					<h3 class="tasks-block_title">{taskName}</h3>
 					{#each tasks[taskName] as item, i (i)}
 						<Button
 							title={item.title}
@@ -66,6 +66,7 @@
 			img {
 				margin-top: 10px;
 				width: 100px;
+                height: 100px;
 			}
 		}
 

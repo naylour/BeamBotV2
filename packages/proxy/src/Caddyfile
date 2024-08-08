@@ -1,4 +1,12 @@
+# {
+# 	acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+# }
+
 $rootPath {
+	# tls {
+	# 	ca https://acme-v02.api.letsencrypt.org/directory
+	# }
+
 	handle $botPath {
 		reverse_proxy http://localhost:$botPort
 	}
@@ -35,4 +43,11 @@ db.$rootPath {
 	}
 
 	reverse_proxy http://localhost:5555
+}
+test.$rootPath {
+	basicauth / {
+		shah $2a$14$Zi7Rqm2U.ByqXzvo4zntBO1VlvU7tYRrsxyBTqUQ5FMfWpohyvrNm
+	}
+
+	reverse_proxy http://localhost:4353
 }

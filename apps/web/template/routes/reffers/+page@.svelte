@@ -7,8 +7,8 @@
 
 	const 
         invite = () => {
-            let url = `https://t.me/BeamBotDevRobot/?start=${user.value?.account.inviteCode}`;
-            let shareText = `Earn with me on BeamBot 🤩\nJoin now and claim your coin bonus!`;
+            let url = `https://t.me/BeamTapBot/Dapp?startapp=${user.value?.account.inviteCode}`;
+            let shareText = `Join now and claim a free coin bonus! 💎`;
 
             tg.webapp.openTelegramLink(
                 'https://t.me/share/url?url=' +
@@ -18,7 +18,7 @@
             );
         },
         copy = () => {
-            navigator.clipboard.writeText(`https://t.me/BeamBotDevRobot/?start=${user.value?.account.inviteCode}`);
+            navigator.clipboard.writeText(`https://t.me/BeamTapBot/Dapp?startapp=${user.value?.account.inviteCode}`);
             tg.webapp.showAlert('Referral link copied!')
         };
 
@@ -31,26 +31,25 @@
 
 <main class="reffers">
 	<header class="reffers-header">
-		<h1 class="reffers_title">Invite friends<br /> and get more rewards</h1>
+		<h1 class="reffers_title">Invite friends,<br />Get more rewards!</h1>
 
 		<img class="reffers_img" src="/reffers_beam.svg" alt="" />
+        <p class="reffers_text">You'll earn <b>15%</b> from direct referrals, and <b>5%</b> from secondary referrals!</p>
 	</header>
 
 	<section class="reffers-main">
 		<p class="reffers_count">
-			{data.user?.account._count.reffers} Friend{(data?.reffers.length || 0) > 1 ? 's' : ''}
+			{data.user?.account._count.reffers} Friend{data.user?.account._count.reffers !== 1 ? 's' : ''}
 		</p>
 		<ul
 			class="reffers-list"
-			data-count={data.user?.account._count.reffers}
-			data-text={(data.user?.account._count.reffers || 0) > 1 ? 'Friends' : 'Friend'}
 		>
 			{#if data.reffers}
 				{#each data.reffers as reffer, i (i)}
 					<li class="reffers-item">
                         <div>
-                            <span style:--color={"#"+((1<<24)*Math.random()|0).toString(16)}>{ reffer.User?.username?.slice(0, 2) }</span>
-						<p>{reffer.User?.username}</p>
+                            <span style:--color={"#"+((1<<24)*Math.random()|0).toString(16)}>{ reffer.User?.firstName?.slice(0, 2) }</span>
+						<p>{reffer.User?.firstName}</p>
                         </div>
 						<p>+{reffer.earnedCoins}</p>
 					</li>
@@ -74,8 +73,18 @@
 		height: 100%;
 		gap: 20px;
 
+        &_text {
+            text-align: center;
+            font-weight: 400;
+            font-size: 14px;
+            b {
+                color: #F2EC00;
+            }
+            text-shadow: 0px 0px 2px black;
+        }
+
         &_img {
-            width: 200px !important;
+            height: 150px;
             aspect-ratio: 1 / 1;
             object-fit: contain;
         }
@@ -109,7 +118,7 @@
                 padding: 2px;
             }
             :global(.button:first-child) {
-                width: 100%;
+                width: fit-content;
             }
 		}
 

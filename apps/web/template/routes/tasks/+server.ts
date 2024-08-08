@@ -53,9 +53,42 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             },
             include: {
                 reward: true,
-                spins: true
+                spins: true,
+                User: {
+                    select: {
+                        refferAccount: true
+                    }
+                }
             }
-        })
+        });
+
+        if(wallet.User.refferAccount) {
+            await prisma.refferAccount.update({
+                where: { id: wallet.User.refferAccount.id },
+                data: {
+                    earnedCoins: {
+                        increment: task.amountType === 'Coin' ? task.amount * .15 : 0
+                    },
+                    
+                    OneWhoInvited: {
+                        update: {
+                            User: {
+                                update: {
+                                    wallet: {
+                                        update: {
+                                            coins: {
+                                                increment: task.amountType === 'Coin' ? task.amount *  .15 : 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
         return json({
             task,
             wallet: serialize(wallet)

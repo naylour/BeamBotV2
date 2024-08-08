@@ -2,7 +2,8 @@ import prisma from '@repo/db';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, fetch }) => {
-    const lastTenSpins = await fetch('/api/recent');
+    try {
+        const lastTenSpins = await fetch('/api/recent');
     let spinElems: App.SpinType[];
 
     if (locals.user?.wallet.spins.length === 0) spinElems = (await prisma.appData.findUnique({
@@ -12,8 +13,12 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
         where: { title: 'spin' }
     }))?.data as unknown as App.SpinType[];
 
+
     return {
         lastTenSpins: await lastTenSpins.json(),
         spinElems
+    }
+    } catch(__error__) {
+        console.error(__error__)
     }
 };

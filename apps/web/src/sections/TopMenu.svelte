@@ -13,7 +13,7 @@
 			class="menu-item"
 			style:--color="#FFF326"
 			onclick={() => {
-				tg.webapp.showAlert(`You have a ${formatWithSpaces(user.value?.wallet.coins || 0)} coins!`);
+				tg.webapp.showAlert(`You have ${formatWithSpaces(user.value?.wallet.coins || 0, ',')} coins!`);
 			}}
 		>
 			<div class="menu-item_content">
@@ -45,7 +45,7 @@
 			class="menu-item"
 			style:--color="#1DD788"
 			onclick={() => {
-				tg.webapp.showAlert(`You have a ${formatWithSpaces(user.value?.wallet.tickets || 0)} tickets!`);
+				tg.webapp.showAlert(`You have ${formatWithSpaces(user.value?.wallet.tickets || 0, ',')} tickets!`);
 			}}
 		>
 			<div class="menu-item_content">

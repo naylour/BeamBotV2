@@ -69,7 +69,7 @@ export default (async (__context__, next) => {
         });
 
         if(user.refferAccount && fromInviter) {
-            await __context__.api.sendMessage(user.refferAccount.OneWhoInvited.User.id, `У вас новый реферал! @${user.username}`)
+            await __context__.api.sendMessage(user.refferAccount.OneWhoInvited.User.id, `Finally! @${user.username} joined your crypto farm on BeamTapBot`)
         }
 
         __context__.user = user;
@@ -77,6 +77,6 @@ export default (async (__context__, next) => {
         await next();
     } catch(__error__) {
         console.log(__error__)
-        await __context__.reply('Ошибка при авторизации!');
+        await __context__.reply('Authorization error!');
     }
 }) as Middleware<Context>;

@@ -26,21 +26,23 @@
 			(!data.isAuth && !data.user) ||
 			tg.webapp?.initDataUnsafe.user.username !== data.user?.username
 		)
-			tg.afterInit(() => user.init(tg.webapp.initData));
+			tg.afterInit(() => user.init({
+                initData: tg.webapp.initData,
+                initDataUnsafe: tg.webapp.initDataUnsafe,
+            }));
 		else {
 			user.value = data.user as App.User;
 
-			setTimeout(() => (app.value.loader.isLoad = true), 600);
+			setTimeout(() => (app.value.loader.isLoad = true), 1000);
 		}
 		if (user.value?.account.heSeeWelcomeScreen && $page.url.pathname === '/welcome') goto('/');
-		else if (user.value?.wallet.spins.length === 0 && $page.url.pathname !== '/lootbox')
-			goto('/lootbox');
-		else if (!user.value?.wallet.reward.lastReward) {
+		else if (!user.value?.wallet?.reward.lastReward || isMoreThan24HoursAgo(new Date(user.value?.wallet.reward.lastReward))) {
 			goto('/daily');
-		}
+		};
 	});
 
 	beforeNavigate((navigate) => {
+        // if(user.value?.wallet.spins?.length == 0 && $page.url.pathname !== '/lootbox') goto('/lootbox');
 		if (!user.value?.account.heSeeWelcomeScreen && navigate.to?.url.pathname === '/welcome')
 			navigate.cancel();
 	});
@@ -51,6 +53,8 @@
 	$inspect(tg.value);
 </script>
 
-{@render children()}
+{#if app.value.loader.isLoad}
+	{@render children()}
 <div class="bg"></div>
+{/if}
 <Loader />

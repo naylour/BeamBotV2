@@ -2,7 +2,6 @@
 	import { user } from 'stores';
 	import { Button } from 'components';
 	import { goto } from '$app/navigation';
-	import UserCard from '../../../src/components/UserCard.svelte';
 
     const { data } = $props();
 </script>
@@ -58,10 +57,11 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			gap: 30px;
+			gap: 20px;
 
 			img {
-				width: 80%;
+				width: 200px;
+                height: 200px;
 			}
 		}
 
@@ -75,7 +75,7 @@
 		}
 
 		:global(.daily_button) {
-			margin-bottom: 20%;
+			margin-bottom: 10%;
 			width: 80%;
 			padding: 10px 20px;
 		}
@@ -86,7 +86,7 @@
 		}
 
 		&-prizes {
-			margin-top: 20px;
+			margin-top: 0px;
 			width: 100%;
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
@@ -110,6 +110,7 @@
 			background: linear-gradient(120deg, rgba(#4e4e4e, 0.2), #0c2087);
 			backdrop-filter: blur(5px);
 			overflow: hidden;
+
 			img {
 				margin-top: -10px;
 				width: 70%;

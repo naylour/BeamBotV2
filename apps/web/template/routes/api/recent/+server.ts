@@ -13,7 +13,7 @@ export const GET: RequestHandler = async () => {
                 select: {
                     User: {
                         select: {
-                            username: true
+                            firstName: true
                         }
                     }
                 }

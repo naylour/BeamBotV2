@@ -13,7 +13,8 @@
     "dependencies": {
         "@prisma/client": "5.17.0",
         "@repo/config": "*",
-        "@repo/utils": "*"
+        "@repo/utils": "*",
+        "csv-parser": "^3.0.0"
     },
     "exports": {
         "./types": "./src/types.ts",

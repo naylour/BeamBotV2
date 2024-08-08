@@ -10,8 +10,8 @@ export const
             return num.toString();
         }
     },
-    formatWithSpaces = (num: number): string => {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    formatWithSpaces = (num: number, symbol: string = ' '): string => {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol);
     },
     calculateIncrement = (initial: number, steps: number): number => {
         if (steps <= 1) return initial;

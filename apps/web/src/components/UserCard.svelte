@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { user } from 'stores';
+	import { tg, user } from 'stores';
 	import Link from './Link.svelte';
 </script>
 

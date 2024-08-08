@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { goto } from '$app/navigation';
 import { page } from '$app/stores';
 
 type Handler = () => void;
@@ -14,7 +15,7 @@ export class Telegram {
             this.webapp.expand();
             this.webapp.ready();
             this.webapp.BackButton.onClick(() => {
-                history.go(-1)
+                goto('/')
             });
 
             page.subscribe(pg => {

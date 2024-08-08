@@ -3,6 +3,7 @@
     "ui": "tui",
     "tasks": {
         "build": {
+            "cache": false,
             "dependsOn": [ ]
         },
         "lint": {
@@ -13,11 +14,11 @@
         "dev": {
             "cache": false,
             "persistent": true,
-            "dependsOn": ["config:gen", "db:generate"]
+            "dependsOn": ["config:gen", "db:generate", "db:studio"]
         },
         "prod": {
             "cache": false,
-            "dependsOn": ["config:gen", "db:generate"]
+            "dependsOn": ["config:gen", "db:generate", "db:studio"]
         },
         "config:gen": {
             "cache": false
@@ -26,6 +27,9 @@
             "cache": false
         },
         "db:generate": {
+            "cache": false
+        },
+        "db:studio": {
             "cache": false
         }
     }

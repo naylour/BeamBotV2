@@ -11,7 +11,7 @@
 
 <section class="spin">
 	<header class="spin-header">
-		<h1 class="spin_title">{ user.value?.wallet.spins.length === 0 ? 'A Special Surprise…' : 'Lootbox'}</h1>
+		<h1 class="spin_title">{ user.value?.wallet.spins?.length === 0 ? 'A Special Surprise…' : 'Lootbox'}</h1>
 		<h3 class="spin_subtitle">Spin and test your luck! 🍀</h3>
 	</header>
 	
@@ -32,10 +32,10 @@
 				{#each recents as lastSpin, i(i)}
                 <li class="recent-list-item" style:--color={"#"+((1<<24)*Math.random()|0).toString(16)}>
 					<div>
-                        <p class="recent_icon">{ lastSpin.Wallet?.User.username?.slice(0, 2) }</p>
+                        <p class="recent_icon">{ lastSpin.Wallet?.User.firstName?.slice(0, 2) }</p>
                         <img src="/{lastSpin.type === 'Coin' ? 'coin' : 'ticket'}.png" alt="" />
                     </div>
-					<p class="recent_user">{ lastSpin.Wallet?.User.username }</p>
+					<p class="recent_user">{ lastSpin.Wallet?.User.firstName }</p>
 					<p class="recent_amount">{formatNumber(lastSpin.amount)}</p>
 				</li>
                 {/each}

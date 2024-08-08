@@ -7,13 +7,13 @@
     <ul class="menu-list">
         <li class="menu-item">
             <Link class="menu_link" href="/tasks">
-                <img width="40px" height="50px" src="/tasks.svg" alt="">
+                <img width="50px" height="50px" src="/tasks.svg" alt="">
                 Tasks
             </Link>
         </li>
         <li class="menu-item">
             <Link class="menu_link" href="/lootbox">
-                <img width="40px" height="50px" src="/lootbox.svg" alt="">
+                <img width="50px" height="50px" src="/lootbox.svg" alt="">
                 Lootbox
             </Link>
         </li>
@@ -22,7 +22,7 @@
                 __event__.preventDefault();
                 tg.webapp.showAlert('Coming soon...')
             }}>
-                <img width="40px" height="50px" src="/shop.svg" alt="">
+                <img width="50px" height="50px" src="/shop.svg" alt="">
                 Shop
             </Link>
         </li>
@@ -31,7 +31,7 @@
                 __event__.preventDefault();
                 tg.webapp.showAlert('Coming soon...')
             }}>
-                <img width="40px" height="50px" src="/treasury.svg" alt="">
+                <img width="50px" height="50px" src="/treasury.svg" alt="">
                 Treasury
             </Link>
         </li>

@@ -107,7 +107,7 @@
         <Button onclick={createFarm}>Start farm</Button>
 	{:else if status === 'process'}
 		<div class="farm-header">
-			Farming: <b>{current.toFixed(2)}</b>
+			Farming Coins: <b>{current.toFixed(2)}</b>
 		</div>
 		<div class="farm-loader">
 			<div

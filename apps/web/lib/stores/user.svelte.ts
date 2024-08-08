@@ -5,13 +5,16 @@ class User {
 
     constructor() { };
 
-    init = async (queryData: TelegramType['WebApp']['initData']) => {
+    init = async (queryData: {
+        initData: TelegramType['WebApp']['initData'],
+        initDataUnsafe: TelegramType['WebApp']['initDataUnsafe']
+    }) => {
         const response = await fetch('/auth', {
             method: 'post',
             headers: {
-                'Content-Type': 'application/text'
+                'Content-Type': 'application/json'
             },
-            body: queryData,
+            body: JSON.stringify(queryData),
         })
 
         if(response.status === 200) {

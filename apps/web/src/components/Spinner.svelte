@@ -5,8 +5,6 @@
 	import { tg, user } from 'stores';
 	import Button from './Button.svelte';
 	import { beforeNavigate, goto } from '$app/navigation';
-	import { dev } from '$app/environment';
-	import { redirect } from '@sveltejs/kit';
 
 	const {
 		rouletteData,
@@ -137,7 +135,7 @@
 		});
 	};
 	const close = async () => {
-		if (user.value?.wallet.spins.length !== 0) {
+		if (user.value?.wallet.spins?.length !== 0) {
             isStopped = false;
             await callback()
         } else {
@@ -168,7 +166,7 @@
 
 <div class="wheel">
 	<div class="wheel_indicator"></div>
-    {#if user.value?.wallet.spins.length !== 0}
+    {#if user.value?.wallet.spins?.length !== 0}
          <p class="wheel_message">
              Open for 1 ticket
          </p>
@@ -215,9 +213,9 @@
 		<div class="buttons">
 			<Button
 				onclick={() => {
-					let url = `https://t.me/BeamBotDevRobot/?start=${user.value?.account.inviteCode}`;
-					let shareText =
-						`I just scored an AMAZING prize ${formatNumber(rouletteData.items[rouletteData.winId].total || 0)} ${rouletteData.items[rouletteData.winId].type === 'coin' ? 'coins' : 'tickets'} from the lootbox on BeamBot! 🎉\n\nYou HAVE to check it out – the rewards are epic!\n\nJoin me on BeamBot and get your own surprise lootbox reward. Trust me, you don't want to miss out on this!\n\nLet's see what you win! 🚀✨
+					let url = `https://t.me/BeamTapBot/?start=${user.value?.account.inviteCode}`;
+					let shareText = `
+                    I just won an INCREDIBLE ${formatNumber(rouletteData.items[rouletteData.winId].total || 0)} ${rouletteData.items[rouletteData.winId].type === 'coin' ? 'coins' : 'tickets'} from BeamBot’s official Lootbox! 🤗\n\nCheck the epic rewards out now! 🔥\n\nJoin me on BeamBot and grab your own special surprise Lootbox ☘️\n\nLet’s see what you win 🏆 you won’t want to miss this! 👀
                     `.trim();
 
 					tg.webapp.openTelegramLink(

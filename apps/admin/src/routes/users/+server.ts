@@ -11,6 +11,11 @@ export const GET: RequestHandler = async ({ url }) => {
     const users = await prisma.user.findMany({
         take: +limit,
         skip: +step,
+        orderBy: {
+            wallet: {
+                coins: 'desc'
+            },
+        },
         include: {
             wallet: {
                 include: {
@@ -25,6 +30,8 @@ export const GET: RequestHandler = async ({ url }) => {
 
         }
     });
+
+    // users[0]
 
     const count = await prisma.user.count();
 

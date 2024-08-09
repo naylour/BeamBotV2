@@ -1,30 +1,31 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { format } from "date-fns";
-    // import { URL } from "svelte/reactivity";
 
     const { data } = $props();
 
-    let pageSize = $state(15);
+    let limit = $derived(+($page.url.searchParams.get("l") || 15));
+    let skip = $derived(+($page.url.searchParams.get("s") || 0));
 
-    let totalPages = $derived(Math.ceil((data.count as number) / pageSize));
-    let currentPage = $derived(
-        (Number($page.url.searchParams.get("skip")) || 0) / pageSize,
-    );
+    let nextStepUrl = $state(`#`);
+    let prevStepUrl = $state(`#`);
 
-    // let filtersState = $state<Record<string, "asc" | "desc" | null>>({
-    //     coins: null,
-    // });
+    $effect(() => {
+        $page.url;
 
-    let filtersUrl = $derived({
-        coins: (() => {
-            let newURL = new URL($page.url);
-            newURL.searchParams.append('filter', 'd')
-            return newURL.toString()
-        })(),
+        let newURL = new URL($page.url);
+
+        newURL.searchParams.set("l", `${limit}`);
+
+        newURL.searchParams.set(
+            "s",
+            `${skip + limit > Math.ceil(data.count / limit) ? Math.ceil(data.count / limit) : skip + limit}`,
+        );
+        prevStepUrl = newURL.href;
+
+        newURL.searchParams.set("s", `${skip - limit < 0 ? 0 : skip - limit}`);
+        nextStepUrl = newURL.href;
     });
-
-    $inspect(filtersUrl);
 </script>
 
 <svelte:head>
@@ -35,28 +36,24 @@
     <div class="users-header">
         <h1 class="users_title">Users</h1>
         <div class="users-pagination">
-            <a href="#">-10</a>
-            <a href="">{"<"}</a>
-            <a href="#">{">"}</a>
-            <a href="#">+10</a>
+            <a href={nextStepUrl}>{"<"}</a>
+            <a href={prevStepUrl}>{">"}</a>
         </div>
     </div>
 
     <table class="users-list">
         <thead>
             <tr>
-                <th><a href="#">ID</a></th>
-                <th><a href="#">Name</a></th>
-                <th><a href="#">Username</a></th>
-                <th><a href="#">Premium</a></th>
-                <th>
-                    <a href={filtersUrl.coins}>Coins</a>
-                </th>
-                <th><a href="#">Tickets</a></th>
-                <th><a href="#">Refs</a></th>
-                <th><a href="#">SC</a></th>
-                <th><a href="#">FC</a></th>
-                <th><a href="#">Created at</a></th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Premium</th>
+                <th>Coins</th>
+                <th>Tickets</th>
+                <th>Refs</th>
+                <th>Spins Count</th>
+                <th>Farm Count</th>
+                <th>Created at</th>
             </tr>
         </thead>
         <tbody>
@@ -100,7 +97,7 @@
                 align-items: center;
                 justify-content: center;
                 border-radius: 8px;
-                width: 40px; 
+                width: 40px;
                 font-weight: 500;
                 aspect-ratio: 1.5 / 1;
                 background-color: var(--primary-color);
@@ -115,46 +112,77 @@
         border-collapse: separate;
         border-spacing: 5px;
         overflow-x: scroll;
-    }
-    table td {
-        // border-bottom: 1px solid #aaaaaa;
-        padding: 5px 10px;
-    }
-    table tbody td {
-        font-size: 16px;
-    }
-    table tr:nth-child(even) {
-        // background: #d0e4f5;
-    }
-    table thead {
-        border-bottom: 2px solid #444444;
-    }
-    table thead th {
-        background: var(--primary-color);
-        border-radius: 8px;
-        font-size: 16px;
-        font-family:
-            system-ui,
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Open Sans",
-            "Helvetica Neue",
-            sans-serif;
-        font-weight: 600;
-        color: #ffffff;
-        a {
-            padding: 5px 10px;
-            display: block;
-            width: 100%;
+
+        th,
+        td {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            &:nth-child(1) {
+                width: 12ch;
+            }
+            &:nth-child(2),
+            &:nth-child(3) {
+                min-width: 180px;
+                max-width: 180px;
+                width: 180px;
+            }
+            &:nth-child(4) {
+                width: 7ch;
+            }
+            &:nth-child(5) {
+                width: 150px;
+            }
+            &:nth-child(6) {
+                width: 150px;
+            }
+            &:nth-child(7) {
+                width: 100px;
+            }
+            &:nth-child(8) {
+                width: 100px;
+            }
+            &:nth-child(9) {
+                width: 100px;
+            }
+            &:nth-child(10) {
+                width: 100px;
+            }
         }
-        // border-left: 2px solid #d0e4f5;
-    }
-    table thead th:first-child {
-        border-left: none;
+        tbody td {
+            font-size: 16px;
+        }
+        td {
+            // border-bottom: 1px solid #aaaaaa;
+            padding: 5px 10px;
+        }
+        thead {
+            border-bottom: 2px solid #444444;
+            th {
+                background: var(--primary-color);
+                border-radius: 8px;
+                font-size: 16px;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    Oxygen,
+                    Ubuntu,
+                    Cantarell,
+                    "Open Sans",
+                    "Helvetica Neue",
+                    sans-serif;
+                font-weight: 600;
+                color: #ffffff;
+                padding: 5px 10px;
+                // border-left: 2px solid #d0e4f5;
+
+                &:first-child {
+                    border-left: none;
+                }
+            }
+        }
     }
 </style>

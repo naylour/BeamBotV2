@@ -11,9 +11,9 @@ export default (async ({ request, cookies }) => {
         initData: string;
         initDataUnsafe: object;
     };
-
+    
     const verifyRes = verify(queryData.initData);
-
+    
     if (!verifyRes) return error(401, { message: 'Не валидные данные!' });
 
     let fromInviter = false;

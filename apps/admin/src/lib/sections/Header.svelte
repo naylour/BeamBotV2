@@ -1,11 +1,12 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 </script>
 
 <header class="header">
     <h2>BeamBot Admin <span>[{ $page.url.pathname.slice(1) || 'home' }]</span></h2>
     {#if $page.url.pathname !== '/'}
-        <button onclick={() => history.go(-1)}>Back</button>
+        <button onclick={() => goto('/')}>Back</button>
     {/if}
 </header>
 

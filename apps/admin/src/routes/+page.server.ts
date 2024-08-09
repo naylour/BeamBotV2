@@ -30,12 +30,31 @@ export const load: PageServerLoad = async () => {
         }
     });
 
+    const userDatesУ = await prisma.user.groupBy({
+        by: ['createdAt'],
+        _count: {
+            id: true,
+        },
+        orderBy: {
+            createdAt: 'asc',
+        },
+    })
+
+    let userDates = {};
+
+    userDatesУ.forEach(item => {
+        // Форматируем дату в формат YYYY-MM-DD
+        const date = item.createdAt.toISOString().split('T')[0];
+        userDates[date] = item._count.id;
+      });
+
     return {
         stat: {
             lastCreatedUsersCount,
             refferedUsersCount,
             totalWallet,
-            invitedByPartners
+            invitedByPartners,
+            userDates
         }
     }
 };

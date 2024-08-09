@@ -2,13 +2,13 @@ import prisma from '@repo/db';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
-    const count = await prisma.reward.count({
-        where: {
-            day: {
-                gte: 1,
-                lte: 9
-            }
+    const partners = await prisma.partner.findMany({
+        include: {
+            _count: true
+        },
+        orderBy: {
+            createdAt: 'desc'
         }
-    })
-    return { count };
+    });
+    return { partners };
 }) satisfies PageServerLoad;

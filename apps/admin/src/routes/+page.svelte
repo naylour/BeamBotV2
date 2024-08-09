@@ -1,5 +1,6 @@
 <script lang="ts">
     import { formatNumber } from "@repo/utils/number";
+    import { onMount } from "svelte";
 
     const { data } = $props();
 </script>
@@ -37,10 +38,13 @@
             </li>
         </ul>
     </section>
+
+    <pre>{JSON.stringify(data.stat.userDates, null, 4)}</pre>
 </section>
 
 <style lang="scss">
     $color: lighten(#17B1EA, 0%);
+
     .stat {
         &-list {
             margin-top: 20px;

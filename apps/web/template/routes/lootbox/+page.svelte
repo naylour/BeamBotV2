@@ -1,30 +1,72 @@
 <script lang="ts">
-	import { formatNumber } from '@repo/utils/number';
-    import { user } from 'stores';
+	// import { formatNumber } from '@repo/utils/number';
+    // import { user } from 'stores';
 
 	import { Spinner } from 'components';
 
-    const { data } = $props();
+    // const { data } = $props();
 
-    let recents = $state(data.lastTenSpins);
+    // let recents = $state(data.lastTenSpins);
 </script>
 
 <section class="spin">
 	<header class="spin-header">
-		<h1 class="spin_title">{ user.value?.wallet.spins?.length === 0 ? 'A Special Surprise…' : 'Lootbox'}</h1>
-		<h3 class="spin_subtitle">Spin and test your luck! 🍀</h3>
+		<!-- <h1 class="spin_title">{ user.value?.wallet.spins?.length === 0 ? 'A Special Surprise…' : 'Lootbox'}</h1>
+		<h3 class="spin_subtitle">Spin and test your luck! 🍀</h3> -->
 	</header>
-	
+
     <div class="spin-main">
         <Spinner rouletteData={{
-            items: data.spinElems,
-            winId: 1
+            items: [
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 1
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 2
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 3
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 4
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 5
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 6
+                },
+                {
+                    chance: 0.12,
+                    type: 'coin',
+                    total: 1233,
+                    id: 7
+                },
+            ]
         }} callback={async () => {
             recents = await (await fetch('/api/recent')).json()
         }}/>
     </div>
 
-	<footer class="spin-footer recent">
+	<!-- <footer class="spin-footer recent">
 		<h2 class="recent_title">Recent wins!</h2>
 
 		<div class="recent-list--wrapper">
@@ -41,7 +83,7 @@
                 {/each}
 			</ul>
 		</div>
-	</footer>
+	</footer> -->
 </section>
 
 <style lang="scss">

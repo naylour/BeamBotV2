@@ -1,5 +1,5 @@
 import type { AppData, User as UserType } from '@repo/db/types';
-import type { User } from '@repo/db/types';
+// import type { User } from '@repo/db/types';
 
 declare global {
 	namespace App {
@@ -19,7 +19,7 @@ declare global {
             id: number
         }
 
-        interface User extends UserType {}
+        // interface User extends UserType {}
         interface ExchangesData {
             address: string;
             amount: number;

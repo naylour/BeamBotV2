@@ -1,5 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { check } from '@repo/auth';
+// import { check } from '@repo/auth';
 
-export const handle: Handle = check;
+// export const handle: Handle = check;
